@@ -21,70 +21,60 @@
 # SOFTWARE.
 
 
+import re
 import socket
 import threading
-import re
+
+from http_proxy.decrypt import decrypt
+
+from http_proxy.async_IO import read_write
 
 BUFFER_SIZE = 4096
-local_addr = '127.0.0.1'
-local_port = 4444
+listen_addr = '127.0.0.1'
+listen_port = 4444
 
 
-def handle_request(client):
-    head_raw = client.recv(BUFFER_SIZE)
-    if not head_raw:
-        client.close()
-        return
-    head_str = head_raw.decode()
-    head_list = head_str.split('\r\n')
-    method, path, protocol = head_list[0].split(' ')
+def handle_request(client_sock):
+    # receive data from client
+    head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()
 
+    # analyze data
+    method, path, protocol = head_str.split('\r\n')[0].split(' ')
     print('[INFO] {} {} {}'.format(method, path, protocol), end=' ')  # debug
     print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
-    # print(head_list)
+    target_sock = _get_target_sock(method, path, client_sock, head_str)
 
-    target = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    filtered_head = _filter_head(head_list)
+    # async communication
+    read_write(client_sock, target_sock)
+
+    # close socket
+    client_sock.close()
+    target_sock.close()
+
+
+def _get_target_sock(method: str, path: str, client_sock, head_str: str):
+    target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if method == 'CONNECT':
         host, port = path.split(':')
         port = int(port)
-        target.connect((host, port))
-        client.send('HTTP/1.1 200 Connection established\r\n\r\n'.encode())
+        target_sock.connect((host, port))
+        client_sock.send('HTTP/1.1 200 Connection established\r\n\r\n'.encode())
     else:
         m = re.match(r'http://(.*?)/.*', path)
         host = m.group(1)
-        target.connect((host, 80))
-        target.send(filtered_head.encode())
-    _read_write(client, target)
-    client.close()
+        target_sock.connect((host, 80))
+        target_sock.send(head_str.encode())
+    return target_sock
 
 
-def _read_write(client, target):
-    import select
-    time_out_max = 20
-    socs = [client, target]
-    count = 0
-    while 1:
-        count += 1
-        (recv, _, error) = select.select(socs, [], socs, 3)
-        if error:
-            break
-        if recv:
-            for in_ in recv:
-                data = in_.recv(8192)
-                if in_ is client:
-                    out = target
-                else:
-                    out = client
-                if data:
-                    out.send(data)
-                    count = 0
-        if count == time_out_max:
-            break
-
-
-def _filter_head(head_list: list):
+def _filter_head(head_str: str):
+    '''
+    Remove 'Connection: keep-alive' in HTTP head if exists.
+    :param head_str: original HTTP head str
+    :return: filtered HTTP head str
+    '''
     buffer = ''
+    head_list = head_str.split('\r\n')
     for line in head_list:
         if line.startswith('Connection'):
             continue
@@ -94,16 +84,16 @@ def _filter_head(head_list: list):
     return buffer
 
 
-def main():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.bind((local_addr, local_port))
-    client.listen(5)
+def server():
+    client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_sock.bind((listen_addr, listen_port))
+    client_sock.listen(5)
     while True:
-        conn, addr = client.accept()
+        conn, addr = client_sock.accept()
         t = threading.Thread(target=handle_request, args=(conn,))
         t.start()
 
 
 if __name__ == '__main__':
-    print('Proxy listening on {}:{}'.format(local_addr, local_port))
-    main()
+    print('Server listening on {}:{}'.format(listen_addr, listen_port))
+    server()

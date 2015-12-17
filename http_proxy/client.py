@@ -20,9 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
+import os
+import sys
 import socket
 import threading
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from http_proxy.encrypt import encrypt
 from http_proxy.async_IO import read_write
 

@@ -20,13 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
+import os
+import sys
 import re
 import socket
 import threading
 
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from http_proxy.decrypt import decrypt
-
 from http_proxy.async_IO import read_write
 
 BUFFER_SIZE = 4096

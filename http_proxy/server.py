@@ -25,6 +25,7 @@ import sys
 import re
 import socket
 import threading
+import datetime
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 from http_proxy.decrypt import decrypt
@@ -41,7 +42,7 @@ def handle_request(client_sock):
 
     # analyze data
     method, path, protocol = head_str.split('\r\n')[0].split(' ')
-    print('[INFO] {} {} {}'.format(method, path, protocol), end=' ')  # debug
+    print('[INFO] [{}] {} {} {}'.format(datetime.datetime.now(), method, path, protocol), end=' ')  # debug
     print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
     target_sock = _get_target_sock(method, path, client_sock, head_str)
 

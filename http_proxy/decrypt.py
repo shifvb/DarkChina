@@ -29,5 +29,8 @@ def decrypt(encrypted_data: bytes):
     '''
     b = bytearray(encrypted_data)
     for i in range(len(b)):
-        b[i] -= 1
+        if b[i] == 0:
+            b[i] = 255
+        else:
+            b[i] -= 1
     return bytes(b)

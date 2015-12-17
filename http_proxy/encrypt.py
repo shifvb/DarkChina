@@ -29,5 +29,23 @@ def encrypt(plain_data: bytes):
     '''
     b = bytearray(plain_data)
     for i in range(len(b)):
-        b[i] += 1
+        if b[i] < 255:
+            b[i] += 1
+        else:
+            b[i] = 0
     return bytes(b)
+
+
+def test():
+    import os
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+    from http_proxy.decrypt import decrypt
+
+    b = bytes(range(0, 256))
+    assert b == decrypt(encrypt(b))
+    for d in b:
+        print(d,  end=' ')
+
+if __name__ == '__main__':
+    test()

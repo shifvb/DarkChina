@@ -69,24 +69,6 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     return target_sock
 
 
-def _filter_head(head_str: str):
-    '''
-    Remove 'Connection: keep-alive' in HTTP head if exists.
-    :param head_str: original HTTP head str
-    :return: filtered HTTP head str
-    '''
-    buffer = ''
-    head_list = head_str.split('\r\n')
-    for line in head_list:
-        if line.startswith('Connection'):
-            continue
-        else:
-            buffer += (line + '\r\n')
-    buffer += '\r\n'
-    
-    return buffer
-
-
 def server():
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((listen_addr, listen_port))

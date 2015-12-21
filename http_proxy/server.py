@@ -83,6 +83,7 @@ def _filter_head(head_str: str):
         else:
             buffer += (line + '\r\n')
     buffer += '\r\n'
+    
     return buffer
 
 

@@ -24,16 +24,17 @@ import os
 import sys
 import socket
 import threading
+import getopt
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from http_proxy.lib.encrypt import encrypt
 from http_proxy.lib.async_IO import read_write
 
 BUFFER_SIZE = 4096
-local_addr = '127.0.0.1'
-local_port = 12306
-server_addr = '127.0.0.1'
-server_port = 4444
+local_addr = ''
+local_port = 0
+server_addr = ''
+server_port = 0
 
 
 def handle_request(client_sock):
@@ -69,6 +70,53 @@ def client():
         t.start()
 
 
+def parse_args():
+    global local_addr
+    global local_port
+    global server_addr
+    global server_port
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hl:b:s:p:', [])
+
+    # get values
+    for k, v in args_dict:
+        if k == '-h':
+            usage()
+            sys.exit(0)
+        elif k == '-l':
+            local_addr = v
+        elif k == '-b':
+            local_port = int(v)
+        elif k == '-s':
+            server_addr = v
+        elif k == '-p':
+            server_port = int(v)
+
+    # get default values
+    if not local_addr:
+        local_addr = '127.0.0.1'
+    if not local_port:
+        local_port = 12306
+    if not server_addr:
+        print('\nServer address required!')
+        usage()
+        sys.exit(1)
+    if not server_port:
+        server_port = 2333
+
+
+def usage():
+    print()
+    print('DarkChina client_side help document')
+    print('Usage: python3 ./server.py [option [value]]...')
+    print('Options:')
+    print('\t-h                         show this help document')
+    print('\t-l local_addr              local binding address, default: 127.0.0.1')
+    print('\t-b local_port              local binding port, default: 12306')
+    print('\t-s server_addr             server address')
+    print('\t-p server_port             server port, default: 2333')
+
+
 if __name__ == '__main__':
+    parse_args()
     print('Client listening on {}:{}'.format(local_addr, local_port))
     client()

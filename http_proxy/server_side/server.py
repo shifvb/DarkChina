@@ -26,14 +26,15 @@ import re
 import socket
 import threading
 import datetime
+import getopt
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from http_proxy.lib.decrypt import decrypt
 from http_proxy.lib.async_IO import read_write
 
 BUFFER_SIZE = 4096
-listen_addr = '127.0.0.1'
-listen_port = 4444
+server_addr = ''
+server_port = 0
 
 
 def handle_request(client_sock):
@@ -71,7 +72,7 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
 
 def server():
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_sock.bind((listen_addr, listen_port))
+    client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
     while True:
         conn, addr = client_sock.accept()
@@ -79,6 +80,38 @@ def server():
         t.start()
 
 
+def parse_args():
+    global server_addr
+    global server_port
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hs:p:', [])
+
+    # set values
+    for k, v in args_dict:
+        if k == '-h':
+            usage()
+            sys.exit(0)
+        elif k == '-s':
+            server_addr = v
+        elif k == '-p':
+            server_port = int(v)
+
+    # set default values
+    if not server_addr:
+        server_addr = '0.0.0.0'
+    if not server_port:
+        server_port = 2333
+
+
+def usage():
+    print('\nUsage: python3 ./server.py [option [value]]...\n')
+    print('DarkChina server_side help document\n')
+    print('Options:')
+    print('\t-h                          show this help document')
+    print('\t-s server_addr              server address, default: 0.0.0.0')
+    print('\t-p server_port              server port, default: 2333')
+
+
 if __name__ == '__main__':
-    print('Server listening on {}:{}'.format(listen_addr, listen_port))
+    parse_args()
+    print('Server listening on {}:{}'.format(server_addr, server_port))
     server()

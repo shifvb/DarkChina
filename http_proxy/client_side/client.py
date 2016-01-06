@@ -26,9 +26,10 @@ import socket
 import threading
 import getopt
 
+
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from http_proxy.lib.encrypt import encrypt
-from http_proxy.lib.async_IO import read_write
+from http_proxy.tools.encrypt import encrypt
+from http_proxy.tools.async_IO import read_write
 
 BUFFER_SIZE = 4096
 local_addr = ''

@@ -58,3 +58,6 @@ target/
 
 # PyCharm
 .idea/
+
+# personal reason
+shadowsocks2/

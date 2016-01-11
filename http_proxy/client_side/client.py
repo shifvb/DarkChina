@@ -36,6 +36,7 @@ local_addr = ''
 local_port = 0
 server_addr = ''
 server_port = 0
+__version__ = 'DarkChina 0.9.0'
 
 
 def handle_request(client_sock):
@@ -76,12 +77,15 @@ def parse_args():
     global local_port
     global server_addr
     global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hl:b:s:p:', [])
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hvl:b:s:p:', [])
 
     # get values
     for k, v in args_dict:
         if k == '-h':
             usage()
+            sys.exit(0)
+        elif k == '-v':
+            print(__version__)
             sys.exit(0)
         elif k == '-l':
             local_addr = v

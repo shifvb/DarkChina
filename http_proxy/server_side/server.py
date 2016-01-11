@@ -35,6 +35,7 @@ from http_proxy.tools.async_IO import read_write
 BUFFER_SIZE = 4096
 server_addr = ''
 server_port = 0
+__version__ = 'DarkChina 0.9.0'
 
 
 def handle_request(client_sock):
@@ -83,12 +84,15 @@ def server():
 def parse_args():
     global server_addr
     global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hs:p:', [])
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hvs:p:', [])
 
     # set values
     for k, v in args_dict:
         if k == '-h':
             usage()
+            sys.exit(0)
+        elif k == '-v':
+            print(__version__)
             sys.exit(0)
         elif k == '-s':
             server_addr = v

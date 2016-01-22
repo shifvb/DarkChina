@@ -41,6 +41,11 @@ def read_write(client, target):
                 else:
                     out = client
                 if data:
+                    # # debug
+                    # if out == target:
+                    #     print('client->server {}\n'.format(data))
+                    # else:
+                    #     print('server->client {}\n'.format(data))
                     out.send(data)
                     count = 0
         if count == time_out_max:

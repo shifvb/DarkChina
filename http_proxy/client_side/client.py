@@ -26,17 +26,17 @@ import socket
 import threading
 import getopt
 
-
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from http_proxy.tools.encrypt import encrypt
 from http_proxy.tools.async_IO import read_write
+from http_proxy.tools.parse_head import parse_head
 
 BUFFER_SIZE = 4096
 local_addr = ''
 local_port = 0
 server_addr = ''
 server_port = 0
-__version__ = 'DarkChina 0.9.0'
+__version__ = 'DarkChina 0.9.1'
 
 
 def handle_request(client_sock):
@@ -45,6 +45,8 @@ def handle_request(client_sock):
     if not head_data:
         client_sock.close()
         return
+
+    parse_head(head_data.decode(), verbose=2)
 
     # encrypt data
     encrypted_data = encrypt(head_data)

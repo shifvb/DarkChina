@@ -25,17 +25,17 @@ import sys
 import re
 import socket
 import threading
-import datetime
 import getopt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 from http_proxy.tools.decrypt import decrypt
 from http_proxy.tools.async_IO import read_write
+from http_proxy.tools.parse_head import parse_head
 
 BUFFER_SIZE = 4096
 server_addr = ''
 server_port = 0
-__version__ = 'DarkChina 0.9.0'
+__version__ = 'DarkChina 0.9.1'
 
 
 def handle_request(client_sock):
@@ -43,9 +43,7 @@ def handle_request(client_sock):
     head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()
 
     # analyze data
-    method, path, protocol = head_str.split('\r\n')[0].split(' ')
-    print('[INFO] [{}] {} {} {}'.format(datetime.datetime.now(), method, path, protocol), end=' ')  # debug
-    print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
+    method, path, protocol = parse_head(head_str, verbose=2)
     target_sock = _get_target_sock(method, path, client_sock, head_str)
 
     # async communication
@@ -56,6 +54,10 @@ def handle_request(client_sock):
     target_sock.close()
 
 
+# get the server socket required by client
+# example:
+#    the path of www.googleapis.com:443 will result in TCP socket of googleapis.com by port 443
+#    the path of http://example.com/ will result in TCP socket of test.com by port 80
 def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if method == 'CONNECT':
@@ -66,7 +68,11 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     else:
         m = re.match(r'http://(.*?)/.*', path)
         host = m.group(1)
-        target_sock.connect((host, 80))
+        port = 80
+        if ':' in host:
+            host, port = host.split(':')
+            port = int(port)
+        target_sock.connect((host, port))
         target_sock.send(head_str.encode())
     return target_sock
 

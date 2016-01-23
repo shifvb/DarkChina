@@ -58,7 +58,7 @@ def handle_request(client_sock):
 # get the server socket required by client
 # example:
 #    the path of www.googleapis.com:443 will result in TCP socket of googleapis.com by port 443
-#    the path of http://example.com/ will result in TCP socket of test.com by port 80
+#    the path of http://example.com/ will result in TCP socket of example.com by port 80
 #
 def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

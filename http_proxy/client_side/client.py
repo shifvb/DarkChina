@@ -122,7 +122,7 @@ def usage():
     print('\t-b local_port              local binding port, default: 12306')
     print('\t-s server_addr             server address')
     print('\t-p server_port             server port, default: 2333')
-    print('\t-V                          show current version')
+    print('\t-V                         show current version')
 
 
 if __name__ == '__main__':

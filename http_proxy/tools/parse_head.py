@@ -14,7 +14,7 @@ import threading
 #
 # example:
 #    if head is str
-#        b'GET http://www.google.com/ HTTP/1.1\r\nHost: www.google.com\r\n\r\n'
+#        'GET http://www.google.com/ HTTP/1.1\r\nHost: www.google.com\r\n\r\n'
 #    then returns tuple
 #        ('GET', 'http://www.google.com/', 'HTTP/1.1')
 #

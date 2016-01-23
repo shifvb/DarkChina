@@ -54,10 +54,12 @@ def handle_request(client_sock):
     target_sock.close()
 
 
+#
 # get the server socket required by client
 # example:
 #    the path of www.googleapis.com:443 will result in TCP socket of googleapis.com by port 443
 #    the path of http://example.com/ will result in TCP socket of test.com by port 80
+#
 def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if method == 'CONNECT':
@@ -90,14 +92,14 @@ def server():
 def parse_args():
     global server_addr
     global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hvs:p:', [])
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVs:p:', [])
 
     # set values
     for k, v in args_dict:
         if k == '-h':
             usage()
             sys.exit(0)
-        elif k == '-v':
+        elif k == '-V':
             print(__version__)
             sys.exit(0)
         elif k == '-s':
@@ -119,6 +121,7 @@ def usage():
     print('\t-h                          show this help document')
     print('\t-s server_addr              server address, default: 0.0.0.0')
     print('\t-p server_port              server port, default: 2333')
+    print('\t-V                          show current version')
 
 
 if __name__ == '__main__':

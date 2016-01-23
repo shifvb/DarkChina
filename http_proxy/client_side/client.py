@@ -46,6 +46,7 @@ def handle_request(client_sock):
         client_sock.close()
         return
 
+    # show debug message
     parse_head(head_data.decode(), verbose=2)
 
     # encrypt data
@@ -79,14 +80,14 @@ def parse_args():
     global local_port
     global server_addr
     global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hvl:b:s:p:', [])
+    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVl:b:s:p:', [])
 
     # get values
     for k, v in args_dict:
         if k == '-h':
             usage()
             sys.exit(0)
-        elif k == '-v':
+        elif k == '-V':
             print(__version__)
             sys.exit(0)
         elif k == '-l':
@@ -121,6 +122,7 @@ def usage():
     print('\t-b local_port              local binding port, default: 12306')
     print('\t-s server_addr             server address')
     print('\t-p server_port             server port, default: 2333')
+    print('\t-V                          show current version')
 
 
 if __name__ == '__main__':

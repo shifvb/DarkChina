@@ -24,24 +24,19 @@ import os
 import sys
 import socket
 import threading
-import getopt
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from http_proxy.tools.encrypt import encrypt
 from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
-from http_proxy.utils import usage
+from http_proxy.utils import parse_args
 
 BUFFER_SIZE = 4096
-local_addr = ''
-local_port = 0
-server_addr = ''
-server_port = 0
 is_local = True
 __version__ = 'DarkChina 0.9.1'
 
 
-def handle_request(client_sock):
+def handle_request(client_sock, server_addr: str, server_port: int):
     # receive data from client(i.e. browser)
     head_data = client_sock.recv(BUFFER_SIZE)
     if not head_data:
@@ -67,54 +62,18 @@ def handle_request(client_sock):
     target_sock.close()
 
 
-def client():
+def client(server_addr: str, server_port: int, local_addr: str, local_port: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((local_addr, local_port))
     client_sock.listen(5)
     while True:
         conn, addr = client_sock.accept()
-        t = threading.Thread(target=handle_request, args=(conn,))
+        t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
         t.start()
 
 
-def parse_args():
-    global local_addr
-    global local_port
-    global server_addr
-    global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVl:b:s:p:', [])
-
-    # get values
-    for k, v in args_dict:
-        if k == '-h':
-            usage(is_local)
-            sys.exit(0)
-        elif k == '-V':
-            print(__version__)
-            sys.exit(0)
-        elif k == '-l':
-            local_addr = v
-        elif k == '-b':
-            local_port = int(v)
-        elif k == '-s':
-            server_addr = v
-        elif k == '-p':
-            server_port = int(v)
-
-    # get default values
-    if not local_addr:
-        local_addr = '127.0.0.1'
-    if not local_port:
-        local_port = 12306
-    if not server_addr:
-        print('\nServer address required!')
-        usage(is_local)
-        sys.exit(1)
-    if not server_port:
-        server_port = 2333
-
-
 if __name__ == '__main__':
-    parse_args()
-    print('Client listening on {}:{}'.format(local_addr, local_port))
-    client()
+    d = parse_args(is_local, __version__)
+    print('Target server: {}:{}'.format(d["server_addr"], d["server_port"]))
+    print('Client listening on {}:{}'.format(d["local_addr"], d["local_port"]))
+    client(d["server_addr"], d["server_port"], d["local_addr"], d["local_port"])

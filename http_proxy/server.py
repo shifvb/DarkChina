@@ -25,18 +25,14 @@ import sys
 import re
 import socket
 import threading
-import getopt
-
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from http_proxy.tools.decrypt import decrypt
 from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
-from http_proxy.utils import usage
+from http_proxy.utils import parse_args
 
 BUFFER_SIZE = 4096
-server_addr = ''
-server_port = 0
 is_local = False
 __version__ = 'DarkChina 0.9.1'
 
@@ -82,7 +78,7 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     return target_sock
 
 
-def server():
+def server(server_addr: str, server_port: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
@@ -92,35 +88,7 @@ def server():
         t.start()
 
 
-def parse_args():
-    global server_addr
-    global server_port
-    args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVs:p:', [])
-
-    # set values
-    for k, v in args_dict:
-        if k == '-h':
-            usage(is_local)
-            sys.exit(0)
-        elif k == '-V':
-            print(__version__)
-            sys.exit(0)
-        elif k == '-s':
-            server_addr = v
-        elif k == '-p':
-            server_port = int(v)
-
-    # set default values
-    if not server_addr:
-        server_addr = '0.0.0.0'
-    if not server_port:
-        server_port = 2333
-
-
-
-
-
 if __name__ == '__main__':
-    parse_args()
-    print('Server listening on {}:{}'.format(server_addr, server_port))
-    server()
+    d = parse_args(is_local, __version__)
+    print('Server listening on {}:{}'.format(d["server_addr"], d["server_port"]))
+    server(d["server_addr"], d["server_port"])

@@ -1,0 +1,20 @@
+def usage(is_local):
+    if is_local:
+        print()
+        print('DarkChina client_side help document')
+        print('Usage: python3 ./server.py [option [value]]...')
+        print('Options:')
+        print('\t-h                         show this help document')
+        print('\t-l local_addr              local binding address, default: 127.0.0.1')
+        print('\t-b local_port              local binding port, default: 12306')
+        print('\t-s server_addr             server address')
+        print('\t-p server_port             server port, default: 2333')
+        print('\t-V                         show current version')
+    else:
+        print('\nUsage: python3 ./server.py [option [value]]...\n')
+        print('DarkChina server_side help document\n')
+        print('Options:')
+        print('\t-h                          show this help document')
+        print('\t-s server_addr              server address, default: 0.0.0.0')
+        print('\t-p server_port              server port, default: 2333')
+        print('\t-V                          show current version')

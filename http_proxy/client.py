@@ -26,16 +26,18 @@ import socket
 import threading
 import getopt
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from http_proxy.tools.encrypt import encrypt
 from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
+from http_proxy.utils import usage
 
 BUFFER_SIZE = 4096
 local_addr = ''
 local_port = 0
 server_addr = ''
 server_port = 0
+is_local = True
 __version__ = 'DarkChina 0.9.1'
 
 
@@ -85,7 +87,7 @@ def parse_args():
     # get values
     for k, v in args_dict:
         if k == '-h':
-            usage()
+            usage(is_local)
             sys.exit(0)
         elif k == '-V':
             print(__version__)
@@ -106,23 +108,10 @@ def parse_args():
         local_port = 12306
     if not server_addr:
         print('\nServer address required!')
-        usage()
+        usage(is_local)
         sys.exit(1)
     if not server_port:
         server_port = 2333
-
-
-def usage():
-    print()
-    print('DarkChina client_side help document')
-    print('Usage: python3 ./server.py [option [value]]...')
-    print('Options:')
-    print('\t-h                         show this help document')
-    print('\t-l local_addr              local binding address, default: 127.0.0.1')
-    print('\t-b local_port              local binding port, default: 12306')
-    print('\t-s server_addr             server address')
-    print('\t-p server_port             server port, default: 2333')
-    print('\t-V                         show current version')
 
 
 if __name__ == '__main__':

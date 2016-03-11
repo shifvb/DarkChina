@@ -24,7 +24,8 @@ import getopt
 import sys
 
 
-def usage(is_local):
+def usage(is_local: bool) -> None:
+    """show usage doc."""
     if is_local:
         print()
         print('DarkChina client_side help document')
@@ -47,6 +48,7 @@ def usage(is_local):
 
 
 def parse_args(is_local: bool, version: str) -> dict:
+    """parse args from command line and return config dict."""
     config_dict = {}
     if is_local:  # is_local is True, local side
         args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVl:b:s:p:', [])

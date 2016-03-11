@@ -32,6 +32,7 @@ from http_proxy.tools.encrypt import encrypt
 from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
 from http_proxy.utils import parse_args
+from http_proxy.utils import check_ver
 
 BUFFER_SIZE = 4096
 is_local = True
@@ -75,6 +76,7 @@ def client(server_addr: str, server_port: int, local_addr: str, local_port: int)
 
 
 if __name__ == '__main__':
+    check_ver()
     d = parse_args(is_local, __version__)
     print('Target server: {}:{}'.format(d["server_addr"], d["server_port"]))
     print('Client listening on {}:{}'.format(d["local_addr"], d["local_port"]))

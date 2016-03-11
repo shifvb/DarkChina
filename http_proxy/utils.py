@@ -99,6 +99,13 @@ def parse_args(is_local: bool, version: str) -> dict:
     return config_dict
 
 
+def check_ver():
+    '''check compatibility'''
+    if not sys.version >= '3.2':
+        print('python 3.3+ required!')
+        sys.exit(0)
+
+
 if __name__ == '__main__':
     result = parse_args(False, 'test version')
     print(result)

@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import datetime
 import threading
-
+from http_proxy.utils import get_time_str
+from http_proxy.utils import get_pretty_str
 
 #
 # parse http head, print debug message according to verbose level
@@ -40,17 +40,17 @@ import threading
 #    then returns tuple
 #        ('GET', 'http://www.google.com/', 'HTTP/1.1')
 #
+PATH_LEN = 36
+
+
 def parse_head(head_str: str, verbose: int):
     method, path, protocol = head_str.split('\r\n')[0].split(' ')
-    if verbose < 0 or verbose > 2:
-        raise Exception('unknown verbose level: {}'.format(verbose))
-    if verbose == 0:    # no message
+    if verbose == 0:  # no message
         pass
     elif verbose == 1:  # brief message only
-        print('[INFO] [{}] {} {} {}'.format(datetime.datetime.now(), method, path, protocol), end=' ')
-        print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
+        print('[INFO] [{}] {:7} {:36} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
     elif verbose == 2:  # brief message and original data
-        print('[INFO] [{}] {} {} {}'.format(datetime.datetime.now(), method, path, protocol), end=' ')
+        print('[INFO] [{}] {} {} {}'.format(get_time_str(), method, path, protocol), end=' ')
         print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
         print(head_str)
     return method, path, protocol

@@ -52,7 +52,11 @@ def handle_request(client_sock, verbose: int):
     except TimeoutError:
         print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
     except ConnectionResetError:
-        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 31)))
+        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 30)))
+    except ConnectionRefusedError:
+        print('[WARNING] [{}] {:7} {} was refused.'.format(get_time_str(), method, get_pretty_str(path, 28)))
+    except ConnectionAbortedError:
+        print('[WARNING] [{}] {:7} {} aborted by client.'.format(get_time_str(), method, get_pretty_str(path, 21)))
     except socket.gaierror:
         print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 31)))
     finally:

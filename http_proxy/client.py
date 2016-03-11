@@ -85,4 +85,4 @@ if __name__ == '__main__':
     d = parse_args(is_local, __version__)
     print('Target server: {}:{}'.format(d["server_addr"], d["server_port"]))
     print('Client listening on {}:{}'.format(d["local_addr"], d["local_port"]))
-    client(d["server_addr"], d["server_port"], d["local_addr"], d["local_port"], d["verbose"])
+    client(**d)

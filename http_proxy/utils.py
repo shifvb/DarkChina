@@ -48,6 +48,7 @@ def usage(is_local: bool) -> None:
         print('\t-V version                  show current version')
         print('\t-v verbose level            verbose level 0->2, default: 0')
 
+
 def parse_args(is_local: bool, version: str) -> dict:
     """parse args from command line and return config dict."""
     config_dict = {}
@@ -103,6 +104,7 @@ def parse_args(is_local: bool, version: str) -> dict:
         config_dict.setdefault("server_addr", '0.0.0.0')
         config_dict.setdefault("server_port", 2333)
         config_dict.setdefault("verbose", 0)
+
     return config_dict
 
 

@@ -101,4 +101,4 @@ if __name__ == '__main__':
     check_ver()
     d = parse_args(is_local, __version__)
     print('Server listening on {}:{}'.format(d["server_addr"], d["server_port"]))
-    server(d["server_addr"], d["server_port"], d["verbose"])
+    server(**d)

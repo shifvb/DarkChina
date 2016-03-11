@@ -50,7 +50,7 @@ def parse_head(head_str: str, verbose: int):
     elif verbose == 1:  # brief message only
         print('[INFO] [{}] {:7} {:35} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
     elif verbose == 2:  # brief message and original data
-        print('[INFO] [{}] {} {} {}'.format(get_time_str(), method, path, protocol), end=' ')
+        print('[DEBUG] [{}] {} {} {}'.format(get_time_str(), method, path, protocol), end=' ')
         print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))
         print(head_str)
     return method, path, protocol

@@ -28,7 +28,13 @@ time_fmt = '%y-%m-%d %H:%M:%S'
 
 
 def usage(is_local: bool) -> None:
-    """show usage doc."""
+    """
+    show usage doc.
+    about verbose level:
+        0 -> only WARNING
+        1 -> WARNING and INFO
+        2 -> WARNING and INFO and DEBUG
+    """
     if is_local:
         print()
         print('DarkChina client_side help document')
@@ -40,7 +46,7 @@ def usage(is_local: bool) -> None:
         print('\t-s server_addr             server address')
         print('\t-p server_port             server port, default: 2333')
         print('\t-V version                 show current version')
-        print('\t-v verbose level           verbose level 0->2, default: 0')
+        print('\t-v verbose level           verbose level 0->2, default: 1')
     else:
         print('\nUsage: python3 ./server.py [option [value]]...\n')
         print('DarkChina server_side help document\n')
@@ -49,7 +55,7 @@ def usage(is_local: bool) -> None:
         print('\t-s server_addr              server address, default: 0.0.0.0')
         print('\t-p server_port              server port, default: 2333')
         print('\t-V version                  show current version')
-        print('\t-v verbose level            verbose level 0->2, default: 0')
+        print('\t-v verbose level            verbose level 0->2, default: 1')
 
 
 def parse_args(is_local: bool, version: str) -> dict:

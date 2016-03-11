@@ -118,12 +118,12 @@ def check_ver():
         sys.exit(0)
 
 
-def get_pretty_str(s: str, length: int) -> str:
+def get_pretty_str(s: str, length=35) -> str:
     """return a copy of s. If the length of s > length, return part of it."""
     if len(s) > length:
         return s[:length - 3] + '...'
     else:
-        return s
+        return s.ljust(length, ' ')
 
 
 def get_time_str():
@@ -132,5 +132,5 @@ def get_time_str():
 
 
 if __name__ == '__main__':
-    result = get_time_str()
+    result = get_pretty_str('d')
     print(result)

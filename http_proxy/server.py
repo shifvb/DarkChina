@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+#
 # The MIT License (MIT)
 #
 # Copyright shifvb 2015

@@ -88,6 +88,7 @@ def server(server_addr: str, server_port: int):
     while True:
         conn, addr = client_sock.accept()
         t = threading.Thread(target=handle_request, args=(conn,))
+        t.daemon = True
         t.start()
 
 

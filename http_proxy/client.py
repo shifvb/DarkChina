@@ -72,6 +72,7 @@ def client(server_addr: str, server_port: int, local_addr: str, local_port: int)
     while True:
         conn, addr = client_sock.accept()
         t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
+        t.daemon = True
         t.start()
 
 

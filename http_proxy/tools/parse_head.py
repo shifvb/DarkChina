@@ -40,7 +40,7 @@ from http_proxy.utils import get_pretty_str
 #    then returns tuple
 #        ('GET', 'http://www.google.com/', 'HTTP/1.1')
 #
-PATH_LEN = 36
+PATH_LEN = 35
 
 
 def parse_head(head_str: str, verbose: int):
@@ -48,7 +48,7 @@ def parse_head(head_str: str, verbose: int):
     if verbose == 0:  # no message
         pass
     elif verbose == 1:  # brief message only
-        print('[INFO] [{}] {:7} {:36} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
+        print('[INFO] [{}] {:7} {:35} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
     elif verbose == 2:  # brief message and original data
         print('[INFO] [{}] {} {} {}'.format(get_time_str(), method, path, protocol), end=' ')
         print('[{} in {} running threads]'.format(threading.current_thread().getName(), threading.active_count()))

@@ -22,6 +22,9 @@
 
 import getopt
 import sys
+import time
+
+time_fmt = '%y-%m-%d %H:%M:%S'
 
 
 def usage(is_local: bool) -> None:
@@ -81,7 +84,7 @@ def parse_args(is_local: bool, version: str) -> dict:
             usage(is_local)
             sys.exit(1)
         config_dict.setdefault("server_port", 2333)
-        config_dict.setdefault("verbose", 0)
+        config_dict.setdefault("verbose", 1)
 
     else:  # is_local is False, server side
         args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVs:p:v:', [])
@@ -103,18 +106,31 @@ def parse_args(is_local: bool, version: str) -> dict:
         # set default values
         config_dict.setdefault("server_addr", '0.0.0.0')
         config_dict.setdefault("server_port", 2333)
-        config_dict.setdefault("verbose", 0)
+        config_dict.setdefault("verbose", 1)
 
     return config_dict
 
 
 def check_ver():
-    '''check compatibility'''
+    """check compatibility"""
     if not sys.version >= '3.2':
         print('python 3.3+ required!')
         sys.exit(0)
 
 
+def get_pretty_str(s: str, length: int) -> str:
+    """return a copy of s. If the length of s > length, return part of it."""
+    if len(s) > length:
+        return s[:length - 3] + '...'
+    else:
+        return s
+
+
+def get_time_str():
+    """return current time str in chinese style."""
+    return time.strftime(time_fmt)
+
+
 if __name__ == '__main__':
-    result = parse_args(False, 'test version')
+    result = get_time_str()
     print(result)

@@ -48,12 +48,15 @@ def handle_request(client_sock, verbose: int):
         method, path, protocol = parse_head(head_str, verbose=verbose)  # analyze data
         target_sock = _get_target_sock(method, path, client_sock, head_str)
         read_write(client_sock, target_sock)  # async communication
+        target_sock.close()  # close socket
     except TimeoutError:
         print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
     except ConnectionResetError:
         print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 31)))
     except socket.gaierror:
         print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 31)))
+    finally:
+        client_sock.close()
 
 
 #

@@ -85,11 +85,16 @@ def server(server_addr: str, server_port: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
-    while True:
-        conn, addr = client_sock.accept()
-        t = threading.Thread(target=handle_request, args=(conn,))
-        t.daemon = True
-        t.start()
+    # todo: robustness: easily to create too many threads
+    try:
+        while True:
+            conn, addr = client_sock.accept()
+            t = threading.Thread(target=handle_request, args=(conn,))
+            t.daemon = True
+            t.start()
+    except KeyboardInterrupt:
+        print('server keyboard end.')
+        sys.exit(0)
 
 
 if __name__ == '__main__':

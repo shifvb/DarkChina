@@ -69,12 +69,15 @@ def client(server_addr: str, server_port: int, local_addr: str, local_port: int)
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((local_addr, local_port))
     client_sock.listen(5)
-    while True:
-        conn, addr = client_sock.accept()
-        t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
-        t.daemon = True
-        t.start()
-
+    try:
+        while True:
+            conn, addr = client_sock.accept()
+            t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
+            t.daemon = True
+            t.start()
+    except KeyboardInterrupt:
+        print('client keyboard end.')
+        sys.exit(0)
 
 if __name__ == '__main__':
     check_ver()

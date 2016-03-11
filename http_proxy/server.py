@@ -40,12 +40,12 @@ is_local = False
 __version__ = 'DarkChina 0.9.1'
 
 
-def handle_request(client_sock):
+def handle_request(client_sock, verbose: int):
     # receive data from client
     head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()
 
     # analyze data
-    method, path, protocol = parse_head(head_str, verbose=2)
+    method, path, protocol = parse_head(head_str, verbose=verbose)
     target_sock = _get_target_sock(method, path, client_sock, head_str)
 
     # async communication
@@ -81,7 +81,7 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     return target_sock
 
 
-def server(server_addr: str, server_port: int):
+def server(server_addr: str, server_port: int, verbose: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
@@ -89,7 +89,7 @@ def server(server_addr: str, server_port: int):
     try:
         while True:
             conn, addr = client_sock.accept()
-            t = threading.Thread(target=handle_request, args=(conn,))
+            t = threading.Thread(target=handle_request, args=(conn, verbose))
             t.daemon = True
             t.start()
     except KeyboardInterrupt:
@@ -101,4 +101,4 @@ if __name__ == '__main__':
     check_ver()
     d = parse_args(is_local, __version__)
     print('Server listening on {}:{}'.format(d["server_addr"], d["server_port"]))
-    server(d["server_addr"], d["server_port"])
+    server(d["server_addr"], d["server_port"], d["verbose"])

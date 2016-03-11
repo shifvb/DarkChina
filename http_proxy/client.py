@@ -39,7 +39,7 @@ is_local = True
 __version__ = 'DarkChina 0.9.1'
 
 
-def handle_request(client_sock, server_addr: str, server_port: int):
+def handle_request(client_sock, server_addr: str, server_port: int, verbose: int):
     # receive data from client(i.e. browser)
     head_data = client_sock.recv(BUFFER_SIZE)
     if not head_data:
@@ -47,7 +47,7 @@ def handle_request(client_sock, server_addr: str, server_port: int):
         return
 
     # show debug message
-    parse_head(head_data.decode(), verbose=2)
+    parse_head(head_data.decode(), verbose=verbose)
 
     # encrypt data
     encrypted_data = encrypt(head_data)
@@ -65,23 +65,24 @@ def handle_request(client_sock, server_addr: str, server_port: int):
     target_sock.close()
 
 
-def client(server_addr: str, server_port: int, local_addr: str, local_port: int):
+def client(server_addr: str, server_port: int, local_addr: str, local_port: int, verbose: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((local_addr, local_port))
     client_sock.listen(5)
     try:
         while True:
             conn, addr = client_sock.accept()
-            t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
+            t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port, verbose))
             t.daemon = True
             t.start()
     except KeyboardInterrupt:
         print('client keyboard end.')
         sys.exit(0)
 
+
 if __name__ == '__main__':
     check_ver()
     d = parse_args(is_local, __version__)
     print('Target server: {}:{}'.format(d["server_addr"], d["server_port"]))
     print('Client listening on {}:{}'.format(d["local_addr"], d["local_port"]))
-    client(d["server_addr"], d["server_port"], d["local_addr"], d["local_port"])
+    client(d["server_addr"], d["server_port"], d["local_addr"], d["local_port"], d["verbose"])

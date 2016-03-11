@@ -34,6 +34,8 @@ from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
 from http_proxy.utils import parse_args
 from http_proxy.utils import check_ver
+from http_proxy.utils import get_pretty_str
+from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
 is_local = False
@@ -41,19 +43,17 @@ __version__ = 'DarkChina 0.9.1'
 
 
 def handle_request(client_sock, verbose: int):
-    # receive data from client
-    head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()
-
-    # analyze data
-    method, path, protocol = parse_head(head_str, verbose=verbose)
-    target_sock = _get_target_sock(method, path, client_sock, head_str)
-
-    # async communication
-    read_write(client_sock, target_sock)
-
-    # close socket
-    client_sock.close()
-    target_sock.close()
+    try:
+        head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()  # receive data from client
+        method, path, protocol = parse_head(head_str, verbose=verbose)  # analyze data
+        target_sock = _get_target_sock(method, path, client_sock, head_str)
+        read_write(client_sock, target_sock)  # async communication
+    except TimeoutError:
+        print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
+    except ConnectionResetError:
+        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 31)))
+    except socket.gaierror:
+        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 31)))
 
 
 #
@@ -86,15 +86,11 @@ def server(server_addr: str, server_port: int, verbose: int):
     client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
     # todo: robustness: easily to create too many threads
-    try:
-        while True:
-            conn, addr = client_sock.accept()
-            t = threading.Thread(target=handle_request, args=(conn, verbose))
-            t.daemon = True
-            t.start()
-    except KeyboardInterrupt:
-        print('server keyboard end.')
-        sys.exit(0)
+    while True:
+        conn, addr = client_sock.accept()
+        t = threading.Thread(target=handle_request, args=(conn, verbose))
+        t.daemon = True
+        t.start()
 
 
 if __name__ == '__main__':

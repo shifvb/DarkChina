@@ -33,6 +33,8 @@ from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
 from http_proxy.utils import parse_args
 from http_proxy.utils import check_ver
+from http_proxy.utils import get_pretty_str
+from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
 is_local = True
@@ -40,29 +42,30 @@ __version__ = 'DarkChina 0.9.1'
 
 
 def handle_request(client_sock, server_addr: str, server_port: int, verbose: int):
-    # receive data from client(i.e. browser)
-    head_data = client_sock.recv(BUFFER_SIZE)
-    if not head_data:
+    try:
+        # receive data from client(i.e. browser)
+        head_data = client_sock.recv(BUFFER_SIZE)
+        if not head_data:
+            client_sock.close()
+            return
+        parse_head(head_data.decode(), verbose=verbose)  # show debug message
+        encrypted_data = encrypt(head_data)  # encrypt data
+        target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # send encrypted data to server
+        target_sock.connect((server_addr, server_port))
+        target_sock.send(encrypted_data)
+        read_write(client_sock, target_sock)  # async communication
+        target_sock.close()  # close socket
+    except TimeoutError:
+        print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 31)))
+    except ConnectionResetError:
+        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 32)))
+    except ConnectionAbortedError:
+        print('[WARNING] [{}] {:7} {} aborted by client.'.format(get_time_str(), "link to",
+                                                                 get_pretty_str(server_addr, 21)))
+    except ConnectionRefusedError:
+        print('[WARNING] [{}] {:7} {} was refused.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 28)))
+    finally:
         client_sock.close()
-        return
-
-    # show debug message
-    parse_head(head_data.decode(), verbose=verbose)
-
-    # encrypt data
-    encrypted_data = encrypt(head_data)
-
-    # send encrypted data to server
-    target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    target_sock.connect((server_addr, server_port))
-    target_sock.send(encrypted_data)
-
-    # async communication
-    read_write(client_sock, target_sock)
-
-    # close socket
-    client_sock.close()
-    target_sock.close()
 
 
 def client(server_addr: str, server_port: int, local_addr: str, local_port: int, verbose: int):

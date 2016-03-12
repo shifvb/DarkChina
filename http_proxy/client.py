@@ -57,14 +57,13 @@ def handle_request(client_sock, server_addr: str, server_port: int):
         read_write(client_sock, target_sock)  # async communication
         target_sock.close()  # close socket
     except TimeoutError:
-        logging.warning('[{}] {:7} {} time out.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 31)))
+        logging.warning('[{}] {:>49}'.format(get_time_str(), "link to " + server_addr + ' time out.'))
     except ConnectionAbortedError:
-        logging.warning(
-            '[{}] {:7} {} aborted by client.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 22)))
+        logging.warning('[{}] {:>49}'.format(get_time_str(), "link to " + server_addr + ' was aborted by client.'))
     except ConnectionResetError:
-        logging.warning('[{}] {:7} {} reseted.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 32)))
+        logging.warning('[{}] {:>49}'.format(get_time_str(), "link to " + server_addr + ' was reseted.'))
     except ConnectionRefusedError:
-        logging.warning('[{}] {:7} {} was refused.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 28)))
+        logging.warning('[{}] {:>49}'.format(get_time_str(), "link to " + server_addr + ' was refused.'))
     except socket.gaierror:
         logging.error('[{}] {:>51}'.format(get_time_str(), "can't CONNECT to server!"))
     finally:

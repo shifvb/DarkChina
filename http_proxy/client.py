@@ -64,6 +64,9 @@ def handle_request(client_sock, server_addr: str, server_port: int, verbose: int
                                                                  get_pretty_str(server_addr, 21)))
     except ConnectionRefusedError:
         print('[WARNING] [{}] {:7} {} was refused.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 28)))
+    except socket.gaierror:
+        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), "link to", get_pretty_str(server_addr,
+                                                                                                           22)))
     finally:
         client_sock.close()
 

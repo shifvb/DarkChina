@@ -58,7 +58,7 @@ def handle_request(client_sock, verbose: int):
     except ConnectionAbortedError:
         print('[WARNING] [{}] {:7} {} aborted by client.'.format(get_time_str(), method, get_pretty_str(path, 21)))
     except socket.gaierror:
-        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 31)))
+        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 22)))
     finally:
         client_sock.close()
 

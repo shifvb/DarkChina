@@ -34,7 +34,6 @@ from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
 from http_proxy.utils import parse_args
 from http_proxy.utils import check_ver
-from http_proxy.utils import get_pretty_str
 from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096

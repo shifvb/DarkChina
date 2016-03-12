@@ -48,7 +48,7 @@ def parse_head(head_str: str):
     method, path, protocol = head_str.split('\r\n')[0].split(' ')
     logging.info('[{}] {:7} {:35} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
     logging.debug(
-            '[{}] {} {} {}'.format(get_time_str(), method, path, protocol) + '[{} in {} running threads]'.format(
+            '[{}] {} {} {}'.format(get_time_str(), method, path, protocol) + ' [{} in {} running threads]\n'.format(
                 threading.current_thread().getName(), threading.active_count()) + head_str)
     return method, path, protocol
 
@@ -57,7 +57,7 @@ def test():
     import logging
     logging.basicConfig(level=logging.INFO)
     for i in range(10):
-        parse_head('GET http://www.google.com/ HTTP/1.1\r\nHost: www.google.com\r\n\r\n', verbose=20)
+        parse_head('GET http://www.google.com/ HTTP/1.1\r\nHost: www.google.com\r\n\r\n')
 
 
 if __name__ == '__main__':

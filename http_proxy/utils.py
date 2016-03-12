@@ -31,10 +31,13 @@ time_fmt = '%y-%m-%d %H:%M:%S'
 def usage(is_local: bool) -> None:
     """
     show usage doc.
-    about verbose level:
-        0 -> only WARNING
-        1 -> WARNING and INFO
-        2 -> WARNING and INFO and DEBUG
+    about verbose level: (according to logging module)
+         <=1: CRITICAL, ERROR, WARNING, INFO, DEBUG
+           2: CRITICAL, ERROR, WARNING, INFO
+           3: CRITICAL, ERROR, WARNING
+           4: CRITICAL, ERROR
+           5: CRITICAL,
+          >5: no message
     """
     if is_local:
         print()
@@ -47,7 +50,7 @@ def usage(is_local: bool) -> None:
         print('\t-s server_addr             server address')
         print('\t-p server_port             server port, default: 2333')
         print('\t-V version                 show current version')
-        print('\t-v verbose level           verbose level 0->2, default: 1')
+        print('\t-v verbose level           verbose level, default: 2')
     else:
         print('\nUsage: python3 ./server.py [option [value]]...\n')
         print('DarkChina server_side help document\n')
@@ -56,7 +59,7 @@ def usage(is_local: bool) -> None:
         print('\t-s server_addr              server address, default: 0.0.0.0')
         print('\t-p server_port              server port, default: 2333')
         print('\t-V version                  show current version')
-        print('\t-v verbose level            verbose level 0->2, default: 1')
+        print('\t-v verbose level            verbose level, default: 2')
 
 
 def parse_args(is_local: bool, version: str) -> dict:
@@ -119,7 +122,7 @@ def parse_args(is_local: bool, version: str) -> dict:
 def check_ver():
     """check compatibility"""
     if not sys.version >= '3.2':
-        print('python 3.3+ required!')
+        print('python 3.2+ required!')
         sys.exit(0)
 
 

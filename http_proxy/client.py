@@ -26,6 +26,7 @@ import os
 import sys
 import socket
 import threading
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from http_proxy.tools.encrypt import encrypt
@@ -41,14 +42,14 @@ is_local = True
 __version__ = 'DarkChina 0.9.1'
 
 
-def handle_request(client_sock, server_addr: str, server_port: int, verbose: int):
+def handle_request(client_sock, server_addr: str, server_port: int):
     try:
         # receive data from client(i.e. browser)
         head_data = client_sock.recv(BUFFER_SIZE)
         if not head_data:
             client_sock.close()
             return
-        parse_head(head_data.decode(), verbose=verbose)  # show debug message
+        parse_head(head_data.decode())  # show debug message
         encrypted_data = encrypt(head_data)  # encrypt data
         target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # send encrypted data to server
         target_sock.connect((server_addr, server_port))
@@ -56,28 +57,27 @@ def handle_request(client_sock, server_addr: str, server_port: int, verbose: int
         read_write(client_sock, target_sock)  # async communication
         target_sock.close()  # close socket
     except TimeoutError:
-        print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 31)))
-    except ConnectionResetError:
-        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 32)))
+        logging.warning('[{}] {:7} {} time out.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 31)))
     except ConnectionAbortedError:
-        print('[WARNING] [{}] {:7} {} aborted by client.'.format(get_time_str(), "link to",
-                                                                 get_pretty_str(server_addr, 21)))
+        logging.warning(
+            '[{}] {:7} {} aborted by client.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 22)))
+    except ConnectionResetError:
+        logging.warning('[{}] {:7} {} reseted.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 32)))
     except ConnectionRefusedError:
-        print('[WARNING] [{}] {:7} {} was refused.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 28)))
+        logging.warning('[{}] {:7} {} was refused.'.format(get_time_str(), "link to", get_pretty_str(server_addr, 28)))
     except socket.gaierror:
-        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), "link to", get_pretty_str(server_addr,
-                                                                                                           22)))
+        logging.error('[{}] {:>51}'.format(get_time_str(), "can't CONNECT to server!"))
     finally:
         client_sock.close()
 
 
-def client(server_addr: str, server_port: int, local_addr: str, local_port: int, verbose: int):
+def client(server_addr: str, server_port: int, local_addr: str, local_port: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((local_addr, local_port))
     client_sock.listen(5)
     while True:
         conn, addr = client_sock.accept()
-        t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port, verbose))
+        t = threading.Thread(target=handle_request, args=(conn, server_addr, server_port))
         t.daemon = True
         t.start()
 

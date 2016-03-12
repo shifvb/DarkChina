@@ -27,6 +27,7 @@ import sys
 import re
 import socket
 import threading
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from http_proxy.tools.decrypt import decrypt
@@ -42,23 +43,23 @@ is_local = False
 __version__ = 'DarkChina 0.9.1'
 
 
-def handle_request(client_sock, verbose: int):
+def handle_request(client_sock):
     try:
         head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()  # receive data from client
-        method, path, protocol = parse_head(head_str, verbose=verbose)  # analyze data
+        method, path, protocol = parse_head(head_str)  # analyze data
         target_sock = _get_target_sock(method, path, client_sock, head_str)
         read_write(client_sock, target_sock)  # async communication
         target_sock.close()  # close socket
     except TimeoutError:
-        print('[WARNING] [{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
-    except ConnectionResetError:
-        print('[WARNING] [{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 30)))
-    except ConnectionRefusedError:
-        print('[WARNING] [{}] {:7} {} was refused.'.format(get_time_str(), method, get_pretty_str(path, 28)))
+        logging.warning('[{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
     except ConnectionAbortedError:
-        print('[WARNING] [{}] {:7} {} aborted by client.'.format(get_time_str(), method, get_pretty_str(path, 21)))
+        logging.warning('[{}] {:7} {} aborted by client.'.format(get_time_str(), method, get_pretty_str(path, 21)))
+    except ConnectionResetError:
+        logging.warning('[{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 30)))
+    except ConnectionRefusedError:
+        logging.warning('[{}] {:7} {} was refused.'.format(get_time_str(), method, get_pretty_str(path, 28)))
     except socket.gaierror:
-        print('[WARNING] [{}] {:7} {} getaddrinfo failed'.format(get_time_str(), method, get_pretty_str(path, 22)))
+        logging.error('[{}] {:>51}'.format(get_time_str(), "can't CONNECT to server!"))
     finally:
         client_sock.close()
 
@@ -88,14 +89,14 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
     return target_sock
 
 
-def server(server_addr: str, server_port: int, verbose: int):
+def server(server_addr: str, server_port: int):
     client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_sock.bind((server_addr, server_port))
     client_sock.listen(5)
     # todo: robustness: easily to create too many threads
     while True:
         conn, addr = client_sock.accept()
-        t = threading.Thread(target=handle_request, args=(conn, verbose))
+        t = threading.Thread(target=handle_request, args=(conn,))
         t.daemon = True
         t.start()
 

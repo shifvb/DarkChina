@@ -23,6 +23,7 @@
 import getopt
 import sys
 import time
+import logging
 
 time_fmt = '%y-%m-%d %H:%M:%S'
 
@@ -63,7 +64,6 @@ def parse_args(is_local: bool, version: str) -> dict:
     config_dict = {}
     if is_local:  # is_local is True, local side
         args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVl:b:s:p:v:', [])
-        # set values
         for k, v in args_dict:
             if k == '-h':
                 usage(is_local)
@@ -82,7 +82,6 @@ def parse_args(is_local: bool, version: str) -> dict:
             elif k == '-v':
                 config_dict["verbose"] = int(v)
 
-        # set default values
         config_dict.setdefault("local_addr", '127.0.0.1')
         config_dict.setdefault("local_port", 12306)
         if not config_dict.get("server_addr", None):
@@ -90,11 +89,9 @@ def parse_args(is_local: bool, version: str) -> dict:
             usage(is_local)
             sys.exit(1)
         config_dict.setdefault("server_port", 2333)
-        config_dict.setdefault("verbose", 1)
 
     else:  # is_local is False, server side
         args_dict, args_left = getopt.getopt(sys.argv[1:], 'hVs:p:v:', [])
-        # set values
         for k, v in args_dict:
             if k == '-h':
                 usage(is_local)
@@ -109,11 +106,13 @@ def parse_args(is_local: bool, version: str) -> dict:
             elif k == '-v':
                 config_dict["verbose"] = int(v)
 
-        # set default values
         config_dict.setdefault("server_addr", '0.0.0.0')
         config_dict.setdefault("server_port", 2333)
-        config_dict.setdefault("verbose", 1)
 
+    # common config
+    config_dict.setdefault("verbose", 2)
+    logging.basicConfig(level=config_dict["verbose"] * 10, format='[%(levelname)s] %(message)s')
+    config_dict.pop("verbose")
     return config_dict
 
 

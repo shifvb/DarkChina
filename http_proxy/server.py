@@ -35,7 +35,7 @@ from http_proxy.tools.async_IO import read_write
 from http_proxy.tools.parse_head import parse_head
 from http_proxy.utils import parse_args
 from http_proxy.utils import check_ver
-from http_proxy.utils import get_pretty_str
+from http_proxy.utils import short_str
 from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
@@ -51,13 +51,14 @@ def handle_request(client_sock):
         read_write(client_sock, target_sock)  # async communication
         target_sock.close()  # close socket
     except TimeoutError:
-        logging.warning('[{}] {:7} {} time out.'.format(get_time_str(), method, get_pretty_str(path, 31)))
+        logging.warning('[{}] {:7} {:>41}'.format(get_time_str(), method, short_str(path, 31) + ' time out.'))
     except ConnectionAbortedError:
-        logging.warning('[{}] {:7} {} aborted by client.'.format(get_time_str(), method, get_pretty_str(path, 21)))
+        logging.warning(
+            '[{}] {:7} {:>41}'.format(get_time_str(), method, short_str(path, 22) + ' aborted by client.'))
     except ConnectionResetError:
-        logging.warning('[{}] {:7} {} reseted.'.format(get_time_str(), method, get_pretty_str(path, 30)))
+        logging.warning('[{}] {:7} {:>41}'.format(get_time_str(), method, short_str(path, 28) + ' was reseted.'))
     except ConnectionRefusedError:
-        logging.warning('[{}] {:7} {} was refused.'.format(get_time_str(), method, get_pretty_str(path, 28)))
+        logging.warning('[{}] {:7} {:>41}'.format(get_time_str(), method, short_str(path, 28) + ' was refused.'))
     except socket.gaierror:
         logging.error('[{}] {:>51}'.format(get_time_str(), "can't CONNECT to server!"))
     finally:

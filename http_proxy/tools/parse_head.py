@@ -23,7 +23,7 @@
 import threading
 import logging
 from http_proxy.utils import get_time_str
-from http_proxy.utils import get_pretty_str
+from http_proxy.utils import short_str
 
 #
 # parse http head, print debug message according to verbose level
@@ -46,7 +46,7 @@ PATH_LEN = 35
 
 def parse_head(head_str: str):
     method, path, protocol = head_str.split('\r\n')[0].split(' ')
-    logging.info('[{}] {:7} {:35} {}'.format(get_time_str(), method, get_pretty_str(path, PATH_LEN), protocol))
+    logging.info('[{}] {:7} {:35} {}'.format(get_time_str(), method, short_str(path, PATH_LEN), protocol))
     logging.debug(
             '[{}] {} {} {}'.format(get_time_str(), method, path, protocol) + ' [{} in {} running threads]\n'.format(
                 threading.current_thread().getName(), threading.active_count()) + head_str)

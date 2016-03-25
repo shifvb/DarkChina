@@ -38,7 +38,7 @@ from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
 is_local = True
-__version__ = 'DarkChina 0.9.1'
+__version__ = (0, 9, 1)
 
 
 def handle_request(client_sock, server_addr: str, server_port: int):

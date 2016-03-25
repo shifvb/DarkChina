@@ -62,7 +62,7 @@ def usage(is_local: bool) -> None:
         print('\t-v verbose level            verbose level, default: 2')
 
 
-def parse_args(is_local: bool, version: str) -> dict:
+def parse_args(is_local: bool, version: tuple) -> dict:
     """parse args from command line and return config dict."""
     config_dict = {}
     if is_local:  # is_local is True, local side
@@ -72,7 +72,7 @@ def parse_args(is_local: bool, version: str) -> dict:
                 usage(is_local)
                 sys.exit(0)
             elif k == '-V':
-                print(version)
+                print('DarkChina {}.{}.{}'.format(*version))
                 sys.exit(0)
             elif k == '-l':
                 config_dict["local_addr"] = v
@@ -100,7 +100,7 @@ def parse_args(is_local: bool, version: str) -> dict:
                 usage(is_local)
                 sys.exit(0)
             elif k == '-V':
-                print(version)
+                print('DarkChina {}.{}.{}'.format(*version))
                 sys.exit(0)
             elif k == '-s':
                 config_dict["server_addr"] = v
@@ -140,5 +140,4 @@ def get_time_str():
 
 
 if __name__ == '__main__':
-    result = get_pretty_str('d')
-    print(result)
+    pass

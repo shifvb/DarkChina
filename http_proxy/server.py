@@ -40,26 +40,26 @@ from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
 is_local = False
-__version__ = (0, 9, 1)
+__version__ = (0, 9, 2)
 
 
 def handle_request(client_sock):
     try:
-        head_str = decrypt(client_sock.recv(BUFFER_SIZE)).decode()  # receive data from client
+        head_str = decrypt(client_sock.recv(BUFFER_SIZE))  # receive data from client
         method, path, protocol = parse_head(head_str)  # analyze data
         target_sock = _get_target_sock(method, path, client_sock, head_str)
         read_write(client_sock, target_sock)  # async communication
-        target_sock.close()  # close socket
     except TimeoutError:
         logging.warning('[WARN] [{}] {:7} {:>53}'.format(get_time_str(), method, short_str(path, 31) + ' time out.'))
     except ConnectionAbortedError:
-        logging.warning('[WARN] [{}] {:7} {:>53}'.format(get_time_str(), method, short_str(path, 22) + ' aborted by client.'))
+        logging.warning(
+            '[WARN] [{}] {:7} {:>53}'.format(get_time_str(), method, short_str(path, 22) + ' aborted by client.'))
     except ConnectionResetError:
         logging.warning('[WARN] [{}] {:7} {:>53}'.format(get_time_str(), method, short_str(path, 28) + ' was reseted.'))
     except ConnectionRefusedError:
         logging.warning('[WARN] [{}] {:7} {:>53}'.format(get_time_str(), method, short_str(path, 28) + ' was refused.'))
     except socket.gaierror:
-        logging.error('[WARN] [{}] {:>53}'.format(get_time_str(), "can't CONNECT to server!"))
+        logging.error('[ERR ] [{}] {:>53}'.format(get_time_str(), "can't CONNECT to server!"))
     finally:
         client_sock.close()
 
@@ -70,7 +70,7 @@ def handle_request(client_sock):
 #    the path of www.googleapis.com:443 will result in TCP socket of googleapis.com by port 443
 #    the path of http://example.com/ will result in TCP socket of example.com by port 80
 #
-def _get_target_sock(method: str, path: str, client_sock, head_str: str):
+def _get_target_sock(method: str, path: str, client_sock, head_str: bytes):
     target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if method == 'CONNECT':
         host, port = path.split(':')
@@ -85,7 +85,7 @@ def _get_target_sock(method: str, path: str, client_sock, head_str: str):
             host, port = host.split(':')
             port = int(port)
         target_sock.connect((host, port))
-        target_sock.send(head_str.encode())
+        target_sock.send(head_str)
     return target_sock
 
 

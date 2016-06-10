@@ -38,7 +38,7 @@ from http_proxy.utils import get_time_str
 
 BUFFER_SIZE = 4096
 is_local = True
-__version__ = (0, 9, 1)
+__version__ = (0, 9, 2)
 
 
 def handle_request(client_sock, server_addr: str, server_port: int):
@@ -48,7 +48,7 @@ def handle_request(client_sock, server_addr: str, server_port: int):
         if not head_data:
             client_sock.close()
             return
-        parse_head(head_data.decode())  # show debug message
+        parse_head(head_data)  # show debug message
         encrypted_data = encrypt(head_data)  # encrypt data
         target_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # send encrypted data to server
         target_sock.connect((server_addr, server_port))

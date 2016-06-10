@@ -25,7 +25,7 @@ import sys
 import time
 import logging
 
-time_fmt = '%y-%m-%d %H:%M:%S'
+time_fmt = '%H:%M:%S'
 
 
 def usage(is_local: bool) -> None:
@@ -114,7 +114,7 @@ def parse_args(is_local: bool, version: tuple) -> dict:
 
     # common config
     config_dict.setdefault("verbose", 2)
-    logging.basicConfig(level=config_dict["verbose"] * 10, format='[%(levelname)s] %(message)s')
+    logging.basicConfig(level=config_dict["verbose"] * 10, format='%(message)s')
     config_dict.pop("verbose")
     return config_dict
 

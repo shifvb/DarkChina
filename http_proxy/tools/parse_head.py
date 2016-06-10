@@ -41,12 +41,12 @@ from http_proxy.utils import short_str
 #    then returns tuple
 #        ('GET', 'http://www.google.com/', 'HTTP/1.1')
 #
-PATH_LEN = 35
+PATH_LEN = 44
 
 
 def parse_head(head_str: str):
     method, path, protocol = head_str.split('\r\n')[0].split(' ')
-    logging.info('[{}] {:7} {:35} {}'.format(get_time_str(), method, short_str(path, PATH_LEN), protocol))
+    logging.info('[INFO] [{}] {:7} {:44} {}'.format(get_time_str(), method, short_str(path, PATH_LEN), protocol))
     logging.debug(
             '[{}] {} {} {}'.format(get_time_str(), method, path, protocol) + ' [{} in {} running threads]\n'.format(
                 threading.current_thread().getName(), threading.active_count()) + head_str)
@@ -55,7 +55,7 @@ def parse_head(head_str: str):
 
 def test():
     import logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
     for i in range(10):
         parse_head('GET http://www.google.com/ HTTP/1.1\r\nHost: www.google.com\r\n\r\n')
 
